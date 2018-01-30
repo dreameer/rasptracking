@@ -62,8 +62,8 @@
 #define protocol_width  812
 #define protocol_height 812
 
-#define camera_width 640 
-#define camera_height 480
+#define camera_width 320 
+#define camera_height 240
     
 //#define RECORDVEDIO
 
@@ -88,11 +88,6 @@ namespace patch
         stm << n ;
         return stm.str() ;
     }
-}
-std::string get_tegra_pipeline(int width, int height, int fps) {
-    return "nvcamerasrc sensor-id= 0 ! video/x-raw(memory:NVMM), width=(int)" + patch::to_string(width) + ", height=(int)" +
-           patch::to_string(height) + ", format=(string)I420, framerate=(fraction)" + patch::to_string(fps) +
-           "/1 ! nvvidconv ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink";
 }
 
 int readqpeng(int p_ttyfd, void *dst, int size, int waitnum) {
@@ -246,9 +241,9 @@ void *writefun(void *datafrommainthread) {
 	params.max_patch_size=camera_width*camera_height;
 	int m_ttyfd = ((Ppassdatathread) datafrommainthread)->tty_filedescriptor;
 
-    int FPS = 30;
-    std::string pipeline = get_tegra_pipeline(camera_width, camera_height, FPS);
-    VideoCapture inputcamera(pipeline, cv::CAP_GSTREAMER);
+        VideoCapture inputcamera(0);
+	inputcamera.set(CAP_PROP_FRAME_WIDTH,camera_width);
+	inputcamera.set(CAP_PROP_FRAME_HEIGHT,camera_height);
 	VideoWriter outputVideo;
     
 	if (!inputcamera.isOpened()) {
@@ -418,12 +413,10 @@ void *writefun(void *datafrommainthread) {
 				write(m_ttyfd, &buff[i], 1);
 			}
 			double fps = cv::getTickFrequency() / (cv::getTickCount()-start);
-			string frameinfo = "framewidth:" + patch::to_string(frame.cols) + " frameheight:" + patch::to_string(frame.rows) + " fps:" + patch::to_string(fps);
+			string frameinfo = patch::to_string(frame.cols) + patch::to_string(frame.rows) + patch::to_string(fps);
 			putText(frame, frameinfo, Point(10, 40),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			string rectinfo = patch::to_string(object_rect.width)+" "+ patch::to_string(object_rect.height)+" "  + patch::to_string(x_offset)+" "  + patch::to_string(y_offset);
 			putText(frame, rectinfo, Point(10, 80),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
-			string tipsforcontroler = "blue waitting,red tracking,no rect lose object";
-			putText(frame,tipsforcontroler, Point(10, 120),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			imshow(windowname, frame);
 			keyboardcmd = (char) waitKey(1);
 		}
@@ -451,7 +444,7 @@ int main(int argc, char *argv[]) {
 	tio.c_lflag = 0;
 	tio.c_cc[VMIN] = 1;
 	tio.c_cc[VTIME] = 0;
-	const char ttyname[] = "/dev/ttyTHS2";
+	const char ttyname[] = "/dev/ttyS0";
 	int tty_fd = open(ttyname, O_RDWR | O_NOCTTY | O_NDELAY | O_NONBLOCK);
 	if (!isatty(tty_fd)) {
 		fprintf(logFile,"filedescritor is not a tty device!\n");
