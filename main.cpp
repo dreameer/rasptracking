@@ -59,12 +59,13 @@
 #define databuffsize 4
 #define writebuffsize 14
 
-#define protocol_width  812
-#define protocol_height 812
+#define protocol_width  320
+#define protocol_height 240
 
 #define camera_width 320 
 #define camera_height 240
-    
+
+#define step 100    
 //#define RECORDVEDIO
 
 using namespace std;
@@ -389,8 +390,8 @@ void *writefun(void *datafrommainthread) {
 			}
 
             short x_offset,y_offset;
-            x_offset =   object_center_x - protocol_width*0.5;
-            y_offset = - (object_center_y - protocol_height*0.5);
+            x_offset =   step*(object_center_x - protocol_width*0.5)/(object_rect.width*((float)protocol_width/(float)camera_width));
+            y_offset = - step*(object_center_y - protocol_height*0.5)/(object_rect.height*((float)protocol_height/(float)camera_height));
 			xl = (x_offset & 0x000000ff);
 			xh = ((x_offset >> 8) & 0x000000ff);
 			yl = (y_offset & 0x000000ff);
