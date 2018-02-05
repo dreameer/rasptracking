@@ -235,10 +235,7 @@ void *writefun(void *datafrommainthread) {
 	 */
 
 	Ptr<Tracker> tracker;
-	TrackerKCF::Params params;
-	params.pca_learning_rate = 0.1f;
-	params.detect_thresh = 0.4f;
-	params.max_patch_size=camera_width*camera_height;
+	TrackerMedianFlow::Params params;
 	int m_ttyfd = ((Ppassdatathread) datafrommainthread)->tty_filedescriptor;
 
         VideoCapture inputcamera(0);
@@ -346,7 +343,7 @@ void *writefun(void *datafrommainthread) {
 				object_rect.y = (int)(init_rect.y);
 				object_rect.width = (int)(init_rect.width);
 				object_rect.height = (int)(init_rect.height);
-				tracker = TrackerKCF::create(params);
+				tracker = TrackerMedianFlow::create(params);
 				cout<<"before init tracker"<<endl;
 				bool initstatus = tracker->init(frame, object_rect);
 				cout<<"after init tracker"<<initstatus<<endl;
