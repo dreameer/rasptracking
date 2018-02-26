@@ -59,14 +59,13 @@
 #define databuffsize 4
 #define writebuffsize 14
 
-#define protocol_width  320
-#define protocol_height 240
+#define protocol_width  640
+#define protocol_height 480
 
-#define camera_width 320 
-#define camera_height 240
+#define camera_width 640 
+#define camera_height 480
 
-#define step 100    
-//#define RECORDVEDIO
+#define RECORDVEDIO
 
 using namespace std;
 using namespace cv;
@@ -215,25 +214,6 @@ void *readfun(void *datafrommainthread) {
 	ReadEnd = true;
 }
 void *writefun(void *datafrommainthread) {
-	/*
-	 detect_thresh = 0.5f;     //!<  detection confidence threshold
-	 sigma=0.2f;               //!<  gaussian kernel bandwidth
-	 lambda=0.0001f;           //!<  regularization
-	 interp_factor=0.075f;     //!<  linear interpolation factor for adaptation
-	 output_sigma_factor=1.0f / 16.0f;  //!<  spatial bandwidth (proportional to target)
-	 resize=true;              //!<  activate the resize feature to improve the processing speed
-	 max_patch_size=80*80;     //!<  threshold for the ROI size
-	 split_coeff=true;         //!<  split the training coefficients into two matrices
-	 wrap_kernel=false;        //!<  wrap around the kernel values
-	 desc_npca = GRAY;         //!<  non-compressed descriptors of TrackerKCF::MODE
-	 desc_pca = CN;            //!<  compressed descriptors of TrackerKCF::MODE
-
-	 //feature compression
-	 compress_feature=true;    //!<  activate the pca method to compress the features
-	 compressed_size=2;        //!<  feature size after compression
-	 pca_learning_rate=0.15f;  //!<  compression learning rate
-	 *
-	 */
 
 	Ptr<Tracker> tracker;
 	TrackerMedianFlow::Params params;
@@ -390,8 +370,8 @@ void *writefun(void *datafrommainthread) {
 			}
 
             short x_offset,y_offset;
-            x_offset =   step*(object_center_x - protocol_width*0.5)/(object_rect.width*((float)protocol_width/(float)camera_width));
-            y_offset =  - step*(object_center_y - protocol_height*0.5)/(object_rect.height*((float)protocol_height/(float)camera_height));
+            x_offset =   object_center_x - protocol_width*0.5;
+            y_offset =  - (object_center_y - protocol_height*0.5);
 			xl = (x_offset & 0x000000ff);
 			xh = ((x_offset >> 8) & 0x000000ff);
 			yl = (y_offset & 0x000000ff);
