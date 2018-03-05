@@ -62,8 +62,8 @@
 #define protocol_width  640
 #define protocol_height 480
 
-#define camera_width 640 
-#define camera_height 480
+#define camera_width 320 
+#define camera_height 240
 
 #define RECORDVEDIO
 
@@ -236,9 +236,9 @@ void *writefun(void *datafrommainthread) {
 		init_rect = center_rect;
 		object_rect = init_rect;
 		const char windowname[] = "FEIFANUAV";
-		namedWindow(windowname,0 );
-		//moveWindow(windowname,0,100);
-		setWindowProperty(windowname,CV_WND_PROP_FULLSCREEN,CV_WINDOW_FULLSCREEN);
+		namedWindow(windowname,1 );
+		moveWindow(windowname,200,100);
+		//setWindowProperty(windowname,CV_WND_PROP_FULLSCREEN,CV_WINDOW_FULLSCREEN);
 		unsigned char track_status = 0;
 		unsigned char track_turn   = 0;
 		char keyboardcmd = 'c';
@@ -391,10 +391,15 @@ void *writefun(void *datafrommainthread) {
 				write(m_ttyfd, &buff[i], 1);
 			}
 			double fps = cv::getTickFrequency() / (cv::getTickCount()-start);
-			string frameinfo = patch::to_string(frame.cols) + patch::to_string(frame.rows) + patch::to_string(fps);
+			string frameinfo = patch::to_string(frame.cols) + "x" + patch::to_string(frame.rows) + "  " + patch::to_string(fps);
 			putText(frame, frameinfo, Point(10, 40),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
-			string rectinfo = patch::to_string(object_rect.width)+" "+ patch::to_string(object_rect.height)+" "  + patch::to_string(x_offset)+" "  + patch::to_string(y_offset);
+			#ifdef RECORDVEDIO
+			putText(frame, "R", Point(frame.cols-40, 40),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+			#endif
+			string rectinfo = patch::to_string(object_rect.width)+" "+ patch::to_string(object_rect.height);
 			putText(frame, rectinfo, Point(10, 80),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+			string offsetinfo = patch::to_string(x_offset)+" "  + patch::to_string(y_offset);
+			putText(frame, offsetinfo, Point(10, 120),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			imshow(windowname, frame);
 			keyboardcmd = (char) waitKey(1);
 		}
