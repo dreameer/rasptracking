@@ -122,10 +122,10 @@ string gettimestrwithavi(void){
     return NAME;
 }
 void drawcross(Mat frame,Rect2d init_rect,const Scalar& color){
-	line(frame,Point((init_rect.x+init_rect.width*0.5),init_rect.y+init_rect.height*0.4),
-	Point((init_rect.x+init_rect.width*0.5),init_rect.y+init_rect.height*0.65),color,1,1);
-	line(frame,Point(init_rect.x+init_rect.width*0.4,init_rect.y+init_rect.height*0.5),
-	Point(init_rect.x+init_rect.width*0.65,init_rect.y+init_rect.height*0.5),color,1,1);
+	line(frame,Point((init_rect.x+init_rect.width*0.5),init_rect.y+init_rect.height*0.1),
+	Point((init_rect.x+init_rect.width*0.5),init_rect.y+init_rect.height*0.95),color,1,1);
+	line(frame,Point(init_rect.x+init_rect.width*0.1,init_rect.y+init_rect.height*0.5),
+	Point(init_rect.x+init_rect.width*0.95,init_rect.y+init_rect.height*0.5),color,1,1);
 }
 bool issamerect(Rect2d rect1,Rect2d rect2){
 	if((rect1.x==rect2.x)&&(rect1.y==rect2.y)&&(rect1.width==rect2.width)&&(rect1.height==rect2.height)){
@@ -232,7 +232,7 @@ void *writefun(void *datafrommainthread) {
 		int object_center_x, object_center_y;
 		unsigned char xl, xh, yl, yh;
 		inputcamera >> frame;
-		center_rect = Rect(frame.cols * 0.5-frame.cols*0.05, frame.rows * 0.5-frame.cols*0.05,frame.cols * 0.1, frame.cols * 0.1);
+		center_rect = Rect(frame.cols * 0.5-frame.cols*0.1, frame.rows * 0.5-frame.cols*0.1,frame.cols * 0.2, frame.cols * 0.2);
 		init_rect = center_rect;
 		object_rect = init_rect;
 		const char windowname[] = "FEIFANUAV";
@@ -390,8 +390,9 @@ void *writefun(void *datafrommainthread) {
 			
 			
 			putText(frame, patch::to_string(frame.cols) + "x" + patch::to_string(frame.rows), Point(4, 13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+			putText(frame, "FEIFANUAV",                                                       Point(frame.cols*0.5-30, 13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
             putText(frame, patch::to_string((int)fps)+"fps",                                  Point(frame.cols-50,13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
-			putText(frame, "x="+patch::to_string(x_offset)+"y="+ patch::to_string(y_offset),  Point(4, frame.rows-5),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+			putText(frame, "x="+patch::to_string(x_offset)+","+"y="+ patch::to_string(y_offset),  Point(4, frame.rows-5),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			
 			drawcross(frame,center_rect,Scalar(0,255,0));
 			
