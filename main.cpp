@@ -250,6 +250,19 @@ void *writefun(void *datafrommainthread) {
 		unsigned short Height = 0;
 		unsigned short temp = 0;
 		unsigned short temp1 = 0;
+		
+		#ifdef RECORDVEDIO
+		const string NAME = gettimestrwithavi();
+	    Size S = Size((int) inputcamera.get(CAP_PROP_FRAME_WIDTH),
+	    			  (int) inputcamera.get(CAP_PROP_FRAME_HEIGHT));
+		outputVideo.open(NAME, CV_FOURCC('D','I','V','X'), inputcamera.get(CAP_PROP_FPS), S, true);
+	    if (!outputVideo.isOpened())
+	    {
+			cout  << "Could not open the output video for write: " << endl;
+			MainControl = false;
+	    }
+	    #endif
+			    
 		while (MainControl) {
 			int64 start = cv::getTickCount();
 			switch(keyboardcmd){
@@ -328,18 +341,6 @@ void *writefun(void *datafrommainthread) {
 				cout<<"before init tracker"<<endl;
 				bool initstatus = tracker->init(frame, object_rect);
 				cout<<"after init tracker"<<initstatus<<endl;
-				
-				#ifdef RECORDVEDIO
-			    const string NAME = gettimestrwithavi();
-			    Size S = Size((int) inputcamera.get(CAP_PROP_FRAME_WIDTH),
-			                  (int) inputcamera.get(CAP_PROP_FRAME_HEIGHT));
-			    outputVideo.open(NAME, CV_FOURCC('D','I','V','X'), inputcamera.get(CAP_PROP_FPS), S, true);
-			    if (!outputVideo.isOpened())
-			    {
-			        cout  << "Could not open the output video for write: " << endl;
-			        break;
-			    }
-			    #endif
 				intracking = true;
 				track_turn = 0;
 			} else {
@@ -357,9 +358,6 @@ void *writefun(void *datafrommainthread) {
 					object_center_y = protocol_height*0.5;
 					track_status = 2;
 				}
-				#ifdef RECORDVEDIO
-				outputVideo << frame;
-				#endif
 
 			} else {
 				rectangle(frame, init_rect, Scalar(255, 0, 0), 2, 1);
@@ -393,13 +391,17 @@ void *writefun(void *datafrommainthread) {
 			double fps = cv::getTickFrequency() / (cv::getTickCount()-start);
 			string frameinfo = patch::to_string(frame.cols) + "x" + patch::to_string(frame.rows) + "  " + patch::to_string(fps);
 			putText(frame, frameinfo, Point(10, 40),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
-			#ifdef RECORDVEDIO
-			putText(frame, "R", Point(frame.cols-40, 40),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
-			#endif
 			string rectinfo = patch::to_string(object_rect.width)+" "+ patch::to_string(object_rect.height);
 			putText(frame, rectinfo, Point(10, 80),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			string offsetinfo = patch::to_string(x_offset)+" "  + patch::to_string(y_offset);
 			putText(frame, offsetinfo, Point(10, 120),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+			
+			
+			#ifdef RECORDVEDIO
+			putText(frame, "R", Point(frame.cols-40, 40),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+			outputVideo << frame;
+			#endif
+				
 			imshow(windowname, frame);
 			keyboardcmd = (char) waitKey(1);
 		}
