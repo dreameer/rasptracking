@@ -123,9 +123,9 @@ string gettimestrwithavi(void){
 }
 void drawcross(Mat frame,Rect2d init_rect,const Scalar& color){
 	line(frame,Point((init_rect.x+init_rect.width*0.5),init_rect.y+init_rect.height*0.4),
-	Point((init_rect.x+init_rect.width*0.5),init_rect.y+init_rect.height*0.6),color,2,1);
+	Point((init_rect.x+init_rect.width*0.5),init_rect.y+init_rect.height*0.65),color,1,1);
 	line(frame,Point(init_rect.x+init_rect.width*0.4,init_rect.y+init_rect.height*0.5),
-	Point(init_rect.x+init_rect.width*0.6,init_rect.y+init_rect.height*0.5),color,2,1);
+	Point(init_rect.x+init_rect.width*0.65,init_rect.y+init_rect.height*0.5),color,1,1);
 }
 bool issamerect(Rect2d rect1,Rect2d rect2){
 	if((rect1.x==rect2.x)&&(rect1.y==rect2.y)&&(rect1.width==rect2.width)&&(rect1.height==rect2.height)){
@@ -232,7 +232,7 @@ void *writefun(void *datafrommainthread) {
 		int object_center_x, object_center_y;
 		unsigned char xl, xh, yl, yh;
 		inputcamera >> frame;
-		center_rect = Rect(frame.cols * 0.40, frame.rows * 0.45,frame.cols * 0.2, frame.rows * 0.1);
+		center_rect = Rect(frame.cols * 0.5-frame.cols*0.05, frame.rows * 0.5-frame.cols*0.05,frame.cols * 0.1, frame.cols * 0.1);
 		init_rect = center_rect;
 		object_rect = init_rect;
 		const char windowname[] = "FEIFANUAV";
@@ -349,7 +349,6 @@ void *writefun(void *datafrommainthread) {
 				if (tracker->update(frame, object_rect)) {
 					init_rect = object_rect;
 					rectangle(frame, object_rect, Scalar(0, 0, 255), 2, 1);
-					drawcross(frame,init_rect,Scalar(0,0,255));
 					object_center_x = (object_rect.x + object_rect.width * 0.5)*((float)protocol_width/(float)camera_width);
 					object_center_y = (object_rect.y + object_rect.height*0.5)*((float)protocol_height/(float)camera_height);
 					track_status = 1;
@@ -361,7 +360,6 @@ void *writefun(void *datafrommainthread) {
 
 			} else {
 				rectangle(frame, init_rect, Scalar(255, 0, 0), 2, 1);
-				drawcross(frame,init_rect,Scalar(255,0,0));
 				object_center_x = protocol_width*0.5;
 				object_center_y = protocol_height*0.5;
 				track_status = 0;
@@ -389,16 +387,16 @@ void *writefun(void *datafrommainthread) {
 				write(m_ttyfd, &buff[i], 1);
 			}
 			double fps = cv::getTickFrequency() / (cv::getTickCount()-start);
-			string frameinfo = patch::to_string(frame.cols) + "x" + patch::to_string(frame.rows) + "  " + patch::to_string(fps);
-			putText(frame, frameinfo, Point(10, 40),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
-			string rectinfo = patch::to_string(object_rect.width)+" "+ patch::to_string(object_rect.height);
-			putText(frame, rectinfo, Point(10, 80),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
-			string offsetinfo = patch::to_string(x_offset)+" "  + patch::to_string(y_offset);
-			putText(frame, offsetinfo, Point(10, 120),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			
+			
+			putText(frame, patch::to_string(frame.cols) + "x" + patch::to_string(frame.rows), Point(4, 13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+            putText(frame, patch::to_string((int)fps)+"fps",                                  Point(frame.cols-50,13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+			putText(frame, "x="+patch::to_string(x_offset)+"y="+ patch::to_string(y_offset),  Point(4, frame.rows-5),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+			
+			drawcross(frame,center_rect,Scalar(0,255,0));
 			
 			#ifdef RECORDVEDIO
-			putText(frame, "R", Point(frame.cols-40, 40),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+			putText(frame, "RCD",                                                             Point(frame.cols-40, frame.rows-5),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			outputVideo << frame;
 			#endif
 				
