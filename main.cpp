@@ -121,6 +121,15 @@ string gettimestrwithavi(void){
     const string NAME = timestr + ".avi";   // Form the new name with container
     return NAME;
 }
+string gettimestr(void){
+    time_t current_time;
+    char* c_time_string;
+    current_time = time(NULL);
+    c_time_string = ctime(&current_time);
+    string timestr;
+    timestr.append(&c_time_string[11],8);
+    return timestr;
+}
 void drawcross(Mat frame,Rect2d init_rect,const Scalar& color){
 	line(frame,Point((init_rect.x+init_rect.width*0.5),init_rect.y+init_rect.height*0.1),
 	Point((init_rect.x+init_rect.width*0.5),init_rect.y+init_rect.height*0.95),color,1,1);
@@ -393,9 +402,10 @@ void *writefun(void *datafrommainthread) {
 			putText(frame, "FEIFANUAV",                                                       Point(frame.cols*0.5-30, 13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
             putText(frame, patch::to_string((int)fps)+"fps",                                  Point(frame.cols-50,13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			putText(frame, "x="+patch::to_string(x_offset)+","+"y="+ patch::to_string(y_offset),  Point(4, frame.rows-5),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
-			
+			putText(frame, gettimestr(),                                                     Point(frame.cols*0.5-30, frame.rows-5),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			drawcross(frame,center_rect,Scalar(0,255,0));
 			
+            
 			#ifdef RECORDVEDIO
 			putText(frame, "RCD",                                                             Point(frame.cols-40, frame.rows-5),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			outputVideo << frame;
