@@ -289,9 +289,8 @@ pca_learning_rate=0.15f;  //!<  compression learning rate
 			MainControl = false;
 	    }
 	    #endif
-			    
+		int64 tickcount;    
 		while (MainControl) {
-			int64 start = cv::getTickCount();
 			switch(keyboardcmd){
 			case 'q':track_turn = 1;break;
 			case 'w':intracking = false;
@@ -413,12 +412,12 @@ pca_learning_rate=0.15f;  //!<  compression learning rate
 			for (int i = 0; i < writebuffsize; i++) {
 				write(m_ttyfd, &buff[i], 1);
 			}
-			double fps = cv::getTickFrequency() / (cv::getTickCount()-start);
-			
+			double delay_between_frame = 1000*(cv::getTickCount()-tickcount) / cv::getTickFrequency();
+			tickcount = cv::getTickCount();
 			
 			putText(frame, patch::to_string(frame.cols) + "x" + patch::to_string(frame.rows), Point(4, 13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			putText(frame, "FEIFANUAV",                                                       Point(frame.cols*0.5-30, 13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
-            putText(frame, patch::to_string((int)fps)+"fps",                                  Point(frame.cols-50,13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
+            putText(frame, patch::to_string((int)delay_between_frame)+"ms",                                  Point(frame.cols-50,13),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			putText(frame, "x="+patch::to_string(x_offset)+","+"y="+ patch::to_string(y_offset),  Point(4, frame.rows-5),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			putText(frame, gettimestr(),                                                     Point(frame.cols*0.5-30, frame.rows-5),FONT_HERSHEY_COMPLEX, 0.5, Scalar(0, 0, 255), 1, 8);
 			drawcross(frame,center_rect,Scalar(0,255,0));
