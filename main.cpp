@@ -65,7 +65,7 @@
 #define camera_width 320 
 #define camera_height 240
 
-#define RECORDVEDIO
+//#define RECORDVEDIO
 
 using namespace std;
 using namespace cv;
@@ -240,7 +240,10 @@ pca_learning_rate=0.15f;  //!<  compression learning rate
 *
 */
 	Ptr<Tracker> tracker;
-	TrackerMedianFlow::Params params;
+	TrackerKCF::Params params;
+	params.desc_npca = TrackerKCF::CUSTOM;
+	params.desc_npca = TrackerKCF::GRAY;
+	params.detect_thresh = 0.4f;
 	int m_ttyfd = ((Ppassdatathread) datafrommainthread)->tty_filedescriptor;
 
         VideoCapture inputcamera(0);
@@ -256,7 +259,7 @@ pca_learning_rate=0.15f;  //!<  compression learning rate
 		int object_center_x, object_center_y;
 		unsigned char xl, xh, yl, yh;
 		inputcamera >> frame;
-		center_rect = Rect(frame.cols * 0.5-frame.cols*0.1, frame.rows * 0.5-frame.cols*0.1,frame.cols * 0.2, frame.cols * 0.2);
+		center_rect = Rect(frame.cols * 0.5-frame.cols*0.05, frame.rows * 0.5-frame.cols*0.05,frame.cols * 0.1, frame.cols * 0.1);
 		init_rect = center_rect;
 		object_rect = init_rect;
 		const char windowname[] = "FEIFANUAV";
@@ -361,7 +364,7 @@ pca_learning_rate=0.15f;  //!<  compression learning rate
 				object_rect.y = (int)(init_rect.y);
 				object_rect.width = (int)(init_rect.width);
 				object_rect.height = (int)(init_rect.height);
-				tracker = TrackerMedianFlow::create(params);
+				tracker = TrackerKCF::create(params);
 				cout<<"before init tracker"<<endl;
 				bool initstatus = tracker->init(frame, object_rect);
 				cout<<"after init tracker"<<initstatus<<endl;
