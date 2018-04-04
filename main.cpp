@@ -220,6 +220,25 @@ void *readfun(void *datafrommainthread) {
 }
 void *writefun(void *datafrommainthread) {
 
+/*
+detect_thresh = 0.5f;     //!<  detection confidence threshold
+sigma=0.2f;               //!<  gaussian kernel bandwidth
+lambda=0.0001f;           //!<  regularization
+interp_factor=0.075f;     //!<  linear interpolation factor for adaptation
+output_sigma_factor=1.0f / 16.0f;  //!<  spatial bandwidth (proportional to target)
+resize=true;              //!<  activate the resize feature to improve the processing speed
+max_patch_size=80*80;     //!<  threshold for the ROI size
+split_coeff=true;         //!<  split the training coefficients into two matrices
+wrap_kernel=false;        //!<  wrap around the kernel values
+desc_npca = GRAY;         //!<  non-compressed descriptors of TrackerKCF::MODE
+desc_pca = CN;            //!<  compressed descriptors of TrackerKCF::MODE
+
+//feature compression
+compress_feature=true;    //!<  activate the pca method to compress the features
+compressed_size=2;        //!<  feature size after compression
+pca_learning_rate=0.15f;  //!<  compression learning rate
+*
+*/
 	Ptr<Tracker> tracker;
 	TrackerMedianFlow::Params params;
 	int m_ttyfd = ((Ppassdatathread) datafrommainthread)->tty_filedescriptor;
